@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WpfMqttSubApp.Models
+﻿namespace WpfMqttSubApp.Models
 {
     // JSON 전송용 객체
     public class CheckResult

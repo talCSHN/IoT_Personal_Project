@@ -5,6 +5,7 @@ using MQTTnet;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using WpfMqttSubApp.Models;
@@ -14,6 +15,7 @@ namespace WpfMqttSubApp.ViewModels
     public partial class MainViewModel : ObservableObject, IDisposable
     {
         #region 내부 멤버변수
+
         private IMqttClient mqttClient;
         private readonly IDialogCoordinator dialogCoordinator;
         private readonly DispatcherTimer timer;
@@ -32,21 +34,20 @@ namespace WpfMqttSubApp.ViewModels
         private string _databaseHost;
         private string _logText;
 
-
-        // 속성 BrokerHost, DatabaseHost
-        // 메서드 ConnectBrokerCommand, ConnectDatabaseCommand       
         #endregion
 
         #region 생성자
+        // 속성 BrokerHost, DatabaseHost
+        // 메서드 ConnectBrokerCommand, ConnectDatabaseCommand       
 
         public MainViewModel(IDialogCoordinator coordinator)
         {
             this.dialogCoordinator = coordinator;
 
-            BrokerHost = App.Configuration.Mqtt.Broker;
+            BrokerHost = App.Configuration.Mqtt.Broker;  // "210.119.12.52";
             DatabaseHost = App.Configuration.Database.Server;
-            mqttTopic = App.Configuration.Mqtt.Topic;        // 설정파일로 작업 가능
-            clientId = App.Configuration.Mqtt.ClientId;
+            mqttTopic = App.Configuration.Mqtt.Topic;    // 설정파일로 작업가능
+            clientId = App.Configuration.Mqtt.ClientId; 
 
             connection = new MySqlConnection();  // 예외처리용 
 
@@ -61,9 +62,11 @@ namespace WpfMqttSubApp.ViewModels
             //};
             //timer.Start();
         }
+
         #endregion
 
         #region MVVM 속성
+
         public string LogText
         {
             get => _logText;
@@ -92,10 +95,11 @@ namespace WpfMqttSubApp.ViewModels
 
             // MQTT 클라이언트접속 설정
             var mqttClientOptions = new MqttClientOptionsBuilder()
-                .WithTcpServer(BrokerHost)
-                .WithClientId(clientId) // 구독시스템도 클라이언트 ID 필요할 수 있음
+                .WithTcpServer(BrokerHost, App.Configuration.Mqtt.Port)
+                //.WithClientId(clientId)  // 구독시스템도 클라이언트ID가 필요할 수 있음
                 .WithCleanSession(true)
                 .Build();
+
             // MQTT 접속 후 이벤트처리
             mqttClient.ConnectedAsync += async e =>
             {
@@ -109,7 +113,7 @@ namespace WpfMqttSubApp.ViewModels
                 var topic = e.ApplicationMessage.Topic;
                 var payload = e.ApplicationMessage.ConvertPayloadToString(); // byte 데이터를 UTF-8 문자열로 변환
 
-                // json데이터를 일반 객체로 다시 변환 -> 역직렬화(Deserialization)
+                // json데이터를 일반객체로 다시 변환 -> 역직렬화(Deserialization)
                 var data = JsonConvert.DeserializeObject<CheckResult>(payload);
                 Debug.WriteLine($"{data.ClientId} / {data.Timestamp} / {data.Result}");
 
@@ -195,7 +199,11 @@ namespace WpfMqttSubApp.ViewModels
                 return;
             }
 
-            connString = $"Server={DatabaseHost};Database={App.Configuration.Database.Database};Uid={App.Configuration.Database.UserId};Pwd={App.Configuration.Database.Password};Charset=utf8";
+            connString = $"Server={DatabaseHost};" +
+                         $"Database={App.Configuration.Database.Database};" +
+                         $"Uid={App.Configuration.Database.UserId};" +
+                         $"Pwd={App.Configuration.Database.Password};" +
+                         "Charset=utf8";
 
             await ConnectDatabaseServer();
         }

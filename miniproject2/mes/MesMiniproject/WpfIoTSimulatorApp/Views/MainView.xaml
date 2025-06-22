@@ -17,7 +17,7 @@
         </Grid.RowDefinitions>
 
         <!-- UI 구성 -->
-        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Stretch">
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
             <Label FontSize="20" FontWeight="Bold" Content="{Binding Greeting}" />
             <Label FontSize="14" Content="{Binding LogText}" />
         </StackPanel>
@@ -42,7 +42,7 @@
                 <Image x:Name="GearStart" Height="80" Width="80" Source="/Views/gear.png" Canvas.Left="55" Canvas.Top="111" HorizontalAlignment="Left" VerticalAlignment="Center" />
                 <Image x:Name="GearEnd" Height="80" Width="80" Source="/Views/gear.png" Canvas.Right="55" Canvas.Top="111" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="454" />
                 <Image x:Name="SortingSensor" Height="45" Width="45" Source="/Views/sensor.png" Canvas.Right="90" Canvas.Left="414" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                <Rectangle x:Name="Product" Height="40" Width="40" Stroke="Black" Fill="{Binding ProductBrush}"  Canvas.Left="127" Canvas.Top="61" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Rectangle x:Name="Product" Height="40" Width="40" Stroke="Black" Fill="{Binding ProductBrush}" Canvas.Left="127" Canvas.Top="61" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             </Canvas>
         </Grid>
     </Grid>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WpfMqttSubApp.Models;
+namespace WpfMrpSimulatorApp.Models;
 
 public partial class Schedule
 {
