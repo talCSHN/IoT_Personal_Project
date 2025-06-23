@@ -45,7 +45,8 @@
                     </Button.ContentTemplate>
                 </Button>
 
-                <Button Content="공정계획" FontSize="12" Background="DodgerBlue" Margin="5">
+                <Button Content="공정계획" FontSize="12" Background="DodgerBlue" Margin="5"
+                        Command="{Binding SetScheduleCommand}">
                     <Button.ContentTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">

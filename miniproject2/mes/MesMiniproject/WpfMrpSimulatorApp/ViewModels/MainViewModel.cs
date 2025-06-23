@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using MahApps.Metro.Controls.Dialogs;
 using System.Windows;
 using System.Windows.Controls;
+using WpfMrpSimulatorApp.Helpers;
 using WpfMrpSimulatorApp.Views;
 
 namespace WpfMrpSimulatorApp.ViewModels
@@ -19,7 +20,7 @@ namespace WpfMrpSimulatorApp.ViewModels
         {
             this.dialogCoordinator = coordinator; // 다이얼로그 코디네이터 초기화
 
-            Greeting = "MRP 공정관리!";
+            Greeting = "MRP 공정관리";
         }
 
         public string Greeting
@@ -51,8 +52,20 @@ namespace WpfMrpSimulatorApp.ViewModels
         [RelayCommand]
         public void AppSetting()
         {
-            var viewModel = new SettingViewModel();
+            var viewModel = new SettingViewModel(Common.DIALOGCOORDINATOR);
             var view = new SettingView
+            {
+                DataContext = viewModel,
+            };
+
+            CurrentView = view;
+        }
+
+        [RelayCommand]
+        public void SetSchedule()
+        {
+            var viewModel = new ScheduleViewModel(Common.DIALOGCOORDINATOR);
+            var view = new ScheduleView
             {
                 DataContext = viewModel,
             };

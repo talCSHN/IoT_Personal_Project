@@ -16,7 +16,7 @@ using WpfMrpSimulatorApp.Models;
 
 namespace WpfMrpSimulatorApp.ViewModels
 {
-    public partial class SettingViewModel : ObservableObject
+    public partial class ScheduleViewModel : ObservableObject
     {
         // readonly 생성자에서 할당하고 나면 그 이후 값 변경 불가
         private readonly IDialogCoordinator dialogCoordinator;
@@ -117,7 +117,7 @@ namespace WpfMrpSimulatorApp.ViewModels
         }
 
         #endregion
-        public SettingViewModel(IDialogCoordinator coordinator)
+        public ScheduleViewModel(IDialogCoordinator coordinator)
         {
             this.dialogCoordinator = coordinator;   // 파라미터 값으로 초기화
 
@@ -172,9 +172,6 @@ namespace WpfMrpSimulatorApp.ViewModels
 
             // IsUpdate가 False면 신규, True면 수정
             IsUpdate = false;
-
-            IsUpdate = true;
-            CanSave = false;    // 이거 없으면 수정 후 신규 눌러도 활성화 되어 있음
         }
 
         #region View 버튼 클릭 메서드
