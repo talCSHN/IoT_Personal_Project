@@ -24,6 +24,10 @@ namespace WpfMrpSimulatorApp.ViewModels
 
         private ObservableCollection<ScheduleNew> _schedules;
         private ScheduleNew _selectedSchedule;
+
+        private ObservableCollection<Setting> _plantCodes;
+        private ObservableCollection<Setting> _facilityIds;
+
         private bool _isUpdate;
 
         private bool _canSave;
@@ -32,6 +36,28 @@ namespace WpfMrpSimulatorApp.ViewModels
         #endregion
 
         #region View와 연동할 속성
+
+        // 시작 시간, 종료 시간 데이터 속성
+        public ObservableCollection<TimeOption> TimeOptions { get; }
+            = new ObservableCollection<TimeOption>(
+                Enumerable.Range(0, 24).Select(h => new TimeOption
+                {
+                    Time = new TimeOnly(h, 0),
+                    Display = $"{h:00}:00"
+                })
+            );
+        // 플랜트코드 콤보박스용 데이터 속성
+        public ObservableCollection<Setting> PlantCodes 
+        { 
+            get => _plantCodes; 
+            set => SetProperty(ref _plantCodes, value); 
+        }
+        // 설비아이디 콤보박스용 데이터 속성
+        public ObservableCollection<Setting> FacilityIds
+        {
+            get => _facilityIds;
+            set => SetProperty(ref _facilityIds, value);
+        }
 
         public bool CanSave
         {
@@ -67,15 +93,14 @@ namespace WpfMrpSimulatorApp.ViewModels
                 // 최초에 BasicCode에 값이 있는 상태만 수정상태
                 if (_selectedSchedule != null)  // 삭제 후에는 _selectedSetting자체가 null이 됨
                 {
-                    //    if (_selectedSchedule.SchIdx != null)  // NullReferenceException 발생 가능
-                    //    {
-                    //        CanSave = true;
-                    //        CanRemove = true;
-                    //    }
+                    if (_selectedSchedule.SchIdx > 0)
+                    {
+                        CanSave = true;
+                        CanRemove = true;
+                    }
                 }
             }
         }
-
         public DateTime? RegDt
         {
             get => _regDt;
@@ -95,6 +120,8 @@ namespace WpfMrpSimulatorApp.ViewModels
             this.dialogCoordinator = coordinator;  // 파라미터값으로 초기화
             this.dbContext = new IoTDbContext();
 
+            InitComboboxes();   // DB에서 데이터로드 후 콤보박스에 들어가는 데이터할당 초기화
+
             LoadGridFromDb(); // DB에서 데이터로드해서 그리드에 출력
             IsUpdate = true;
 
@@ -102,14 +129,24 @@ namespace WpfMrpSimulatorApp.ViewModels
             CanSave = CanRemove = false;
         }
 
+        private void InitComboboxes()
+        {
+            using (var db = new IoTDbContext())
+            {
+                var plants = db.Settings.Where(s => s.BasicCode.StartsWith("PLT")).ToList();
+                PlantCodes = new ObservableCollection<Setting>(plants);
+
+                var facilities = db.Settings.Where(s => s.BasicCode.StartsWith("FAC")).ToList();
+                FacilityIds = new ObservableCollection<Setting>(facilities);
+            }
+        }
+
         private async Task LoadGridFromDb()
         {
             try
             {
-                Console.WriteLine("LoadGridFromDb 실행");
                 using (var db = new IoTDbContext())
                 {
-                    Console.WriteLine("using문 실행");
                     var results = db.Schedules
                                     .Join(db.Settings,
                                         sch => sch.PlantCode,
@@ -148,6 +185,7 @@ namespace WpfMrpSimulatorApp.ViewModels
         private void InitVariable()
         {
             SelectedSchedule = new ScheduleNew();
+            SelectedSchedule.SchDate = DateOnly.FromDateTime(DateTime.Now); // 신규버튼 눌렀을 때 0001-01-01 방지
             // IsUpdate가 False면 신규, True면 수정
             IsUpdate = false;
 
@@ -163,6 +201,7 @@ namespace WpfMrpSimulatorApp.ViewModels
             InitVariable();
             IsUpdate = false;  // DoubleCheck. 확실하게 동작을 하면 지워도 되는 로직
             CanSave = true; // 저장버튼 활성화
+            CanRemove = false;
         }
 
         [RelayCommand]
@@ -171,34 +210,43 @@ namespace WpfMrpSimulatorApp.ViewModels
             // INSERT, UPDATE 기능을 모두 수행
             try
             {
-                string query = string.Empty;
-
-                using (MySqlConnection conn = new MySqlConnection(Common.CONNSTR))
+                // SelectedSchedule 형 ScheduleNew -> Schedule 객체로 바꿔서 저장, 수정해야함
+                var schedule = new Schedule
                 {
-                    conn.Open();
+                    SchIdx = SelectedSchedule.SchIdx,
+                    PlantCode = SelectedSchedule.PlantCode,
+                    SchDate = SelectedSchedule.SchDate,
+                    LoadTime = SelectedSchedule.LoadTime,
+                    SchStartTime = SelectedSchedule.SchStartTime,
+                    SchEndTime = SelectedSchedule.SchEndTime,
+                    SchFacilityId = SelectedSchedule.SchFacilityId,
+                    SchAmount = SelectedSchedule.SchAmount,
+                };
 
-                    if (IsUpdate)
+                using (var db = new IoTDbContext())
+                {
+                    if (schedule.SchIdx == 0)   // 신규
                     {
-                        query = @"UPDATE settings SET codeName = @codeName, codeDesc = @codeDesc, modDt = now() 
-                                   WHERE basicCode = @basicCode";  // UPDATE 쿼리
+                        schedule.RegDt = DateTime.Now;  // 등록일 현재일자
+                        db.Schedules.Add(schedule);     // ASP.NET에서 한 작업과 동일
                     }
-                    else
+                    else    // 수정
                     {
-                        query = @"INSERT INTO settings (basicCode, codeName, codeDesc, regDt)
-                                   VALUES (@basicCode, @codeName, @codeDesc, now());"; // INSERT 쿼리
+                        var origin = db.Schedules.Find(schedule.SchIdx);    // ASP.NET에서 한 작업과 동일
+                        if (origin != null)
+                        {
+                            origin.PlantCode = schedule.PlantCode;
+                            origin.SchDate = schedule.SchDate;
+                            origin.LoadTime = schedule.LoadTime;
+                            origin.SchStartTime = schedule.SchStartTime;
+                            origin.SchEndTime = schedule.SchEndTime;
+                            origin.SchFacilityId = schedule.SchFacilityId;
+                            origin.SchAmount = schedule.SchAmount;
+                            origin.ModDt = DateTime.Now;
+                        }
                     }
-
-                    MySqlCommand cmd = new MySqlCommand(query, conn);
-
-                    var resultCnt = cmd.ExecuteNonQuery();
-                    if (resultCnt > 0)
-                    {
-                        await this.dialogCoordinator.ShowMessageAsync(this, "기본설정 저장", "데이터가 저장되었습니다.");
-                    }
-                    else
-                    {
-                        await this.dialogCoordinator.ShowMessageAsync(this, "기본설정 저장", "데이터가 저장에 실패했습니다.");
-                    }
+                    db.SaveChanges();   // COMMIT
+                    await this.dialogCoordinator.ShowMessageAsync(this, "공정계획 저장", "데이터가 저장되었습니다.");
                 }
             }
             catch (Exception ex)
@@ -218,24 +266,16 @@ namespace WpfMrpSimulatorApp.ViewModels
 
             try
             {
-                string query = "DELETE FROM settings WHERE basicCode = @basicCode";
-
-                using (MySqlConnection conn = new MySqlConnection(Common.CONNSTR))
+                using (var db = new IoTDbContext())
                 {
-                    conn.Open();
-                    MySqlCommand cmd = new MySqlCommand(query, conn);
-
-                    int resultCnt = cmd.ExecuteNonQuery(); // 삭제된 쿼리행수 리턴 1, 안지워졌으면 0
-
-                    if (resultCnt == 1)
+                    var entity = db.Schedules.Find(SelectedSchedule.SchIdx);
+                    if (entity != null)
                     {
-                        await this.dialogCoordinator.ShowMessageAsync(this, "기본설정 삭제", "데이터가 삭제되었습니다.");
-                    }
-                    else
-                    {
-                        await this.dialogCoordinator.ShowMessageAsync(this, "기본설정 삭제", "데이터가 삭제 문제발생!!");
+                        db.Schedules.Remove(entity);
+                        db.SaveChanges();   // COMMIT
                     }
                 }
+                await this.dialogCoordinator.ShowMessageAsync(this, "공정계획 삭제", "데이터가 삭제되었습니다.");
             }
             catch (Exception ex)
             {

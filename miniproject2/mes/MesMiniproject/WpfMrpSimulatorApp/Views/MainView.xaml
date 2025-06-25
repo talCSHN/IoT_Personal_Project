@@ -57,7 +57,8 @@
                     </Button.ContentTemplate>
                 </Button>
 
-                <Button Content="모니터링" FontSize="12" Background="LightSeaGreen" Margin="5">
+                <Button Content="모니터링" FontSize="12" Background="LightSeaGreen" Margin="5"
+                        Command="{Binding GetMonitoringCommand}">
                     <Button.ContentTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">

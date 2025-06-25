@@ -10,6 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Views\belt.png" />
+    <None Remove="Views\gear.png" />
+    <None Remove="Views\sensor.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="stock.ico" />
   </ItemGroup>
 
@@ -26,6 +32,12 @@
     <PackageReference Include="MySql.Data" Version="9.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Views\belt.png" />
+    <Resource Include="Views\gear.png" />
+    <Resource Include="Views\sensor.png" />
   </ItemGroup>
 
 </Project>
