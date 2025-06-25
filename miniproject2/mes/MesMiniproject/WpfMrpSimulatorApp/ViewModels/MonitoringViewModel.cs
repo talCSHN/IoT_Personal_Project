@@ -23,5 +23,15 @@ namespace WpfMrpSimulatorApp.ViewModels
         {
             this.dialogCoordinator = coordinator;
         }
+        [RelayCommand]
+        public async Task SearchProcess()
+        {
+            await this.dialogCoordinator.ShowMessageAsync(this, "공정조회", "조회 시작");
+        }
+        [RelayCommand]
+        public async Task StartProcess()
+        {
+            await this.dialogCoordinator.ShowMessageAsync(this, "공정시작", "공정 시작");
+        }
     }
 }

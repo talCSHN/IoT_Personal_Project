@@ -31,14 +31,27 @@
         <!-- UI구성 데이터그리드 -->
         <Grid Grid.Row="1" Grid.Column="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="30" />
+                <RowDefinition Height="35" />
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
 
             <!-- Button 영역 -->
             <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <Button Content="Move" Command="{Binding MoveCommand}" />
-                <Button Content="Check" Command="{Binding CheckCommand}" />
+                <mah:NumericUpDown Margin="0,0,5,0"
+                                   mah:TextBoxHelper.AutoWatermark="True"
+                                   mah:TextBoxHelper.Watermark="공정계획순번"
+                                   Minimum="1" />
+                <Button Content="Search" Command="{Binding SearchProcessCommand}" Margin="0,0,5,0"/>
+                <Button Content="Start" Command="{Binding StartProcessCommand}">
+                    <Button.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconMaterial Kind="Restart" />
+                                <Label Content="{Binding}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </Button.ContentTemplate>
+                </Button>
             </StackPanel>
 
             <!-- HMI(Human Machine Interface) Like -->
