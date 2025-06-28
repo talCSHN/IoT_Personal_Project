@@ -1,8 +1,7 @@
-# miniproject-2025
-IoT 미니프로젝트 2025
+# Personal Projects
 
-## 미니프로젝트 2
+## MES 공정관리 시뮬레이션
 [링크](./miniproject2/README.md)
 
-## 미니프로젝트 3
+## 추후 리팩토링
 [링크](./miniproject3/README.md)
