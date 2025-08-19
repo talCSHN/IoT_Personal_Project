@@ -4,4 +4,4 @@
 [링크](./miniproject2/README.md)
 
 ## 추후 리팩토링
-[링크](./miniproject3/README.md)
+[링크](./ObjectTest/README.md)
