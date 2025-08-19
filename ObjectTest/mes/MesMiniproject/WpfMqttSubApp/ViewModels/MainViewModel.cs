@@ -19,7 +19,7 @@ namespace WpfMqttSubApp.ViewModels
         private IMqttClient mqttClient;
         private readonly IDialogCoordinator dialogCoordinator;
         private readonly DispatcherTimer timer;
-        private int lineCounter = 1;  // TODO : 나중에 텍스트가 너무 많아져서 느려지면 초기화시 사용
+        private int lineCounter = 1;
 
         private string connString = string.Empty;
         private MySqlConnection connection;
@@ -37,30 +37,18 @@ namespace WpfMqttSubApp.ViewModels
         #endregion
 
         #region 생성자
-        // 속성 BrokerHost, DatabaseHost
-        // 메서드 ConnectBrokerCommand, ConnectDatabaseCommand       
 
         public MainViewModel(IDialogCoordinator coordinator)
         {
             this.dialogCoordinator = coordinator;
 
-            BrokerHost = App.Configuration.Mqtt.Broker;  // "210.119.12.52";
+            BrokerHost = App.Configuration.Mqtt.Broker;
             DatabaseHost = App.Configuration.Database.Server;
-            mqttTopic = App.Configuration.Mqtt.Topic;    // 설정파일로 작업가능
+            mqttTopic = App.Configuration.Mqtt.Topic;
             clientId = App.Configuration.Mqtt.ClientId; 
 
-            connection = new MySqlConnection();  // 예외처리용 
-
-            // RichTextBox 테스트용. 
-            //timer = new DispatcherTimer();
-            //timer.Interval = TimeSpan.FromSeconds(1);
-            //timer.Tick += (sender, e) =>
-            //{
-            //    // RichTextBox 추가 내용
-            //    LogText += $"Log [{DateTime.Now:HH:mm:ss}] - {counter++}\n";
-            //    Debug.WriteLine($"Log [{DateTime.Now:HH:mm:ss}] - {counter++}");
-            //};
-            //timer.Start();
+            connection = new MySqlConnection();
+            
         }
 
         #endregion

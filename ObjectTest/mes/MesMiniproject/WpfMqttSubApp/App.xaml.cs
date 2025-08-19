@@ -7,12 +7,9 @@ using WpfMqttSubApp.Views;
 
 namespace WpfMqttSubApp
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
+    
     public partial class App : Application
     {
-        // 애플리케이션이 완전 종료될때까지 계속 사용가능
         public static TotalConfig? Configuration { get; private set; }
 
         private void Application_Startup(object sender, StartupEventArgs e)

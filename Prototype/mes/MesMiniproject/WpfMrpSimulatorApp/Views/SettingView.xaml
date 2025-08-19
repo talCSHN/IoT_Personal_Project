@@ -1,0 +1,120 @@
+﻿<UserControl 
+    x:Class="WpfMrpSimulatorApp.Views.SettingView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:WpfMrpSimulatorApp.Views"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+    mc:Ignorable="d" 
+    Dialog:DialogParticipation.Register="{Binding}"
+    d:DesignHeight="335" d:DesignWidth="790">
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="31" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="2*" />
+        </Grid.ColumnDefinitions>
+        
+        <!-- UI구성 타이틀 -->
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="2">
+            <Label Content="기본설정" FontSize="14" FontWeight="Bold"
+                   VerticalContentAlignment="Bottom" HorizontalAlignment="Left" />
+            <iconPacks:PackIconVaadinIcons Kind="Cogs" />
+        </StackPanel>
+        
+        <!-- UI구성 데이터그리드 -->
+        <DataGrid Grid.Row="1" Grid.Column="0" Margin="3"
+                  AutoGenerateColumns="False" IsReadOnly="True"
+                  ItemsSource="{Binding Settings}"
+                  SelectedItem="{Binding SelectedSetting, Mode=TwoWay}"
+                  Style="{StaticResource MahApps.Styles.DataGrid.Azure}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding BasicCode}" Header="기본코드" Width="75" />
+                <DataGridTextColumn Binding="{Binding CodeName}" Header="코드명" Width="200" />
+                <DataGridTextColumn Binding="{Binding RegDt, StringFormat='yyyy-MM-dd'}" Header="작성일" Width="73" />
+                <DataGridTextColumn Binding="{Binding ModDt, StringFormat='yyyy-MM-dd'}" Header="수정일" Width="73" />
+            </DataGrid.Columns>
+        </DataGrid>
+        
+        <!-- UI구성 입력양식 -->
+        <GroupBox Grid.Row="1" Grid.Column="1" Margin="3" Header="기본설정">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <!-- 수정모드(Update)때는 BasicCode를 입력할 수 없음 -->
+                <TextBox Grid.Row="0" Margin="2" CharacterCasing="Upper"
+                         mah:TextBoxHelper.AutoWatermark="True" 
+                         mah:TextBoxHelper.Watermark="기본코드(8자)"
+                         MaxLength="8"
+                         Text="{Binding SelectedSetting.BasicCode}" IsReadOnly="{Binding IsUpdate}"/>
+
+                <TextBox Grid.Row="1" Margin="2"
+                         mah:TextBoxHelper.AutoWatermark="True" 
+                         mah:TextBoxHelper.Watermark="코드명" 
+                         Text="{Binding SelectedSetting.CodeName}" />
+
+                <TextBox Grid.Row="2" Grid.RowSpan="2" Margin="2"
+                         mah:TextBoxHelper.AutoWatermark="True" 
+                         mah:TextBoxHelper.Watermark="코드설명"
+                         Text="{Binding SelectedSetting.CodeDesc}" />
+                
+                <DatePicker Grid.Row="4" Margin="2" IsEnabled="False"
+                            mah:TextBoxHelper.AutoWatermark="True" 
+                            mah:TextBoxHelper.Watermark="작성일"
+                            Text="{Binding SelectedSetting.RegDt}" />
+
+                <DatePicker Grid.Row="5" Margin="2" IsEnabled="False"
+                            mah:TextBoxHelper.AutoWatermark="True" 
+                            mah:TextBoxHelper.Watermark="수정일"
+                            Text="{Binding SelectedSetting.ModDt}"/>
+
+                <StackPanel Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="신규" Margin="0,0,3,0" Command="{Binding NewDataCommand}">
+                        <Button.ContentTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding}" Margin="0,0,5,0" />
+                                    <iconPacks:PackIconMaterial Kind="FileOutline" />                                    
+                                </StackPanel>
+                            </DataTemplate>
+                        </Button.ContentTemplate>
+                    </Button>
+                    <Button Content="저장" Margin="0,0,3,0" Command="{Binding SaveDataCommand}" IsEnabled="{Binding CanSave}">
+                        <Button.ContentTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding}" Margin="0,0,5,0" />
+                                    <iconPacks:PackIconMaterial Kind="FilePlusOutline" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </Button.ContentTemplate>
+                    </Button>
+                    <Button Content="삭제" Command="{Binding RemoveDataCommand}" IsEnabled="{Binding CanRemove}">
+                        <Button.ContentTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding}" Margin="0,0,5,0" />
+                                    <iconPacks:PackIconMaterial Kind="FileRemoveOutline" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </Button.ContentTemplate>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</UserControl>
