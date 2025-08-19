@@ -1,8 +1,4 @@
-## 미니프로젝트 2
-
-### 포트폴리오 개발
-
-#### MES 공정관리 시뮬레이션
+## MES 공정관리 시뮬레이션
 - 용어
     - MES : Manufacturing Execution System 생산실행관리 시스템
         - 생산현장에서 실시간으로 제조/생산 작업 계획, 실행, 추적, 모니터링하는 시스템
@@ -16,7 +12,7 @@
         - MES는 실시간으로 처리하는 시스템. 소프트웨어
         - SF는 비전, 시각화(실시간). IoT 센서장비, 클라우드, AI + 시스템
 
-##### 작업 개요
+### 작업 개요
 <img src="../image/mp0001.png" width="600">
 
 전체 구조도
@@ -30,7 +26,7 @@
 
 ERD
 
-##### 양품/불량품 선별용 IoT 센서장비
+### 양품/불량품 선별용 IoT 센서장비
 - [컬러센서](https://www.devicemart.co.kr/goods/view?no=1066926) : 색상으로 선별
     - 상대적으로 저렴하고 간단한 색상만으로 선별이 필요할 때 사용
 - [로드셀무게센서](https://www.devicemart.co.kr/goods/view?no=12146929) : 무게로 선별
@@ -48,7 +44,7 @@ ERD
 - 2019년도 학생 작품 영상 - https://www.youtube.com/watch?v=qo5e_HCUAl8
 - 유튜브에서 sorting machine으로 검색
 
-##### 양품/불량품 선별용 모터장비
+### 양품/불량품 선별용 모터장비
 - [컨베이어벨트]() - 선별을 위한 기반 인프라
 - [서보모터]() - 가장 저렴하게 분류가능
 - [푸시모터]() - 앞쪽으로 밀어내어서 분류
@@ -57,10 +53,10 @@ ERD
 - [로봇암]() - 아주 섬세하게 분류가능 
 - [AGV]() - 먼거리까지 분류, 이동 가능
 
-##### 양품/불량품 선별예
+### 양품/불량품 선별예
 - 음식포장 검사, 볼트 조립 검사, 납땜 공정, 액체 충전 검사, ...
 
-##### 공정관리 ERD
+### 공정관리 ERD
 1. MySQL Workbench 
     - miniproject 테이터베이스 생성
     - 테이블 
@@ -70,7 +66,7 @@ ERD
 
 <img src="../image/mp0003.png" width="600">
 
-##### IoT 디바이스 시뮬레이터
+### IoT 디바이스 시뮬레이터
 - 라즈베리파이, 아두이노 등 사용 디바이스 구성 및 구현
 - C# 시뮬레이션으로 동작을 만드는 윈앱 구현
 
@@ -89,7 +85,7 @@ ERD
 
     <img src="../image/mp0005.png" width="600">
 
-##### MQTT Subscriber
+### MQTT Subscriber
 - WPF 과목에서 사용했던 MQTT Subscriber 그대로 사용
 - WpfMqttSubApp 프로젝트 가져오기
 - SmartHome 작업했던 부분 수정 DB 저장부분 변경
@@ -107,7 +103,7 @@ ERD
 
     <img src="../image/mp0004.png" width="600">
 
-##### WPF 공정관리 앱 개발
+### WPF 공정관리 앱 개발
 - 기본적인 DB관리 앱 + 실시간 공정 모니터링 + 리포트 시각화
 
 1. CommunityToolkit.Mvvm, MahApps.Metro 초기 설정
@@ -144,20 +140,3 @@ ERD
 
 https://github.com/user-attachments/assets/39c28599-421b-4a96-96a8-6237f451e479
 
-##### 추후 작업(MiniProject 3)
-1. ReportView, ReportViewModel LiveChart 작업
-2. MainView 상태표시줄 완성
-3. 예외처리 마무리
-
-#### 파이썬 AI + ASP.NET 연동(MiniProject 3)
-- 참조소스
-- iot-webapp-2025/ref/ReferencedSolution/ConvertWebApp 
-- hungout-with-springboot/003_aicombo/
-
-### 파이널프로젝트 관련
-
-#### 주제 선정
-
-#### 프로젝트 주제 발표
-
-#### 프로젝트 사용 재료선정
