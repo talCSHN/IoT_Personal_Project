@@ -1,0 +1,112 @@
+﻿<UserControl 
+    x:Class="WpfMrpSimulatorApp.Views.MonitoringView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:WpfMrpSimulatorApp.Views"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+    mc:Ignorable="d" 
+    Dialog:DialogParticipation.Register="{Binding}"
+    d:DesignHeight="335" d:DesignWidth="790">
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="31" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5.0*" />
+            <ColumnDefinition Width="1.5*" />
+        </Grid.ColumnDefinitions>
+        
+        <!-- UI구성 타이틀 -->
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="2">
+            <Label Content="모니터링" FontSize="14" FontWeight="Bold"
+                   VerticalContentAlignment="Bottom" HorizontalAlignment="Left" />
+            <iconPacks:PackIconUnicons Kind="EyeLine" />
+        </StackPanel>
+        
+        <!-- UI구성 공정화면 캔버스 -->
+        <Grid Grid.Row="1" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+
+            <!-- Button 영역 -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <mah:NumericUpDown Margin="0,0,5,0"
+                                   mah:TextBoxHelper.AutoWatermark="True" 
+                                   mah:TextBoxHelper.Watermark="순번"
+                                   Minimum="1" Value="{Binding SchIdx}" />
+                <Button Content="Search" Command="{Binding SearchProcessCommand}" Margin="0,0,5,0" />
+                <Button Content="Start" Command="{Binding StartProcessCommand}" Visibility="Hidden">
+                    <Button.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconMaterial Kind="Restart" />
+                                <Label Content="{Binding}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </Button.ContentTemplate>
+                </Button>
+
+                <Label Content="{Binding LogText}" />
+
+
+            </StackPanel>
+
+            <!-- HMI(Human Machine Interface) Like -->
+            <Canvas Grid.Row="1">
+                <Image Source="/Views/belt.png" Canvas.Bottom="5" Height="100" Canvas.Top="102" Canvas.Left="45" 
+               HorizontalAlignment="Left" VerticalAlignment="Center"  />
+                <Image x:Name="GearStart" Height="80" Width="80" Source="/Views/gear.png" Canvas.Left="55" Canvas.Top="111" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                <Image x:Name="GearEnd" Height="80" Width="80" Source="/Views/gear.png" Canvas.Right="55" Canvas.Top="111" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="454" />
+                <Image x:Name="SortingSensor" Height="45" Width="45" Source="/Views/sensor.png" Canvas.Right="90" Canvas.Left="414" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                <Rectangle x:Name="Product" Height="40" Width="40" Stroke="Black" Fill="{Binding ProductBrush}" Canvas.Left="127" Canvas.Top="61" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            </Canvas>
+        </Grid>
+
+        <!-- UI구성 입력양식 -->
+        <GroupBox Grid.Row="1" Grid.Column="1" Margin="3" Header="모니터링">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="2*" />
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="0" Grid.Column="0" Content="플랜트명" />
+                <Label Grid.Row="1" Grid.Column="0" Content="공정일자" />
+                <Label Grid.Row="2" Grid.Column="0" Content="로드시간(초)" />
+                <Label Grid.Row="3" Grid.Column="0" Content="설비명" />
+                <Label Grid.Row="4" Grid.Column="0" Content="계획수량" />
+                <Label Grid.Row="5" Grid.Column="0" Content="성공/실패수" />
+                <Label Grid.Row="6" Grid.Column="0" Content="공정성공률" />
+
+                <Label Grid.Row="0" Grid.Column="1" Content="{Binding PlantName}" FontWeight="Bold" />
+                <Label Grid.Row="1" Grid.Column="1" Content="{Binding PrcDate}" />
+                <Label Grid.Row="2" Grid.Column="1" Content="{Binding PrcLoadTime}" />
+                <Label Grid.Row="3" Grid.Column="1" Content="{Binding PrcFacilityName}" FontWeight="Bold" />
+                <Label Grid.Row="4" Grid.Column="1" Content="{Binding SchAmount}" FontWeight="Bold" Foreground="Blue" />
+                <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Horizontal">
+                    <Label Content="{Binding SuccessAmount}" Foreground="Green" />
+                    <Label Content="/" />
+                    <Label Content="{Binding FailAmount}" Foreground="Red" />
+                </StackPanel>                
+                <Label Grid.Row="6" Grid.Column="1" Content="{Binding SuccessRate}" Foreground="Blue" />
+            </Grid>
+        </GroupBox>
+    </Grid>
+</UserControl>
