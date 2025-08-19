@@ -15,7 +15,6 @@ namespace WpfMrpSimulatorApp.ViewModels
 {   
     public partial class ScheduleViewModel : ObservableObject
     {
-        // readonly 생성자에서 할당하고나면 그 이후에 값변경 불가
         private readonly IDialogCoordinator dialogCoordinator;
         private readonly IoTDbContext dbContext;
 
@@ -115,14 +114,13 @@ namespace WpfMrpSimulatorApp.ViewModels
 
         public ScheduleViewModel(IDialogCoordinator coordinator)
         {
-            this.dialogCoordinator = coordinator;  // 파라미터값으로 초기화
+            this.dialogCoordinator = coordinator;
             this.dbContext = new IoTDbContext();
 
-            InitComboboxes(); // DB에서 데이터로드 후 콤보박스에 들어가는 데이터할당 초기화 
-            LoadGridFromDb(); // DB에서 데이터로드해서 그리드에 출력
+            InitComboboxes();
+            LoadGridFromDb();
             IsUpdate = true;
 
-            // 최초에는 저장버튼, 삭제버튼이 비활성화 
             CanSave = CanRemove = false;            
         }
 
@@ -156,13 +154,13 @@ namespace WpfMrpSimulatorApp.ViewModels
                                           {
                                             SchIdx = temp.sch.SchIdx,
                                             PlantCode = temp.sch.PlantCode,
-                                            PlantName = temp.setting1.CodeName,  // 첫번째 조인에서 만든 값
+                                            PlantName = temp.setting1.CodeName,
                                             SchDate = temp.sch.SchDate,
                                             LoadTime = temp.sch.LoadTime,
                                             SchStartTime = temp.sch.SchStartTime,
                                             SchEndTime = temp.sch.SchEndTime,
                                             SchFacilityId = temp.sch.SchFacilityId,
-                                            SchFacilityName = setting2.CodeName,  // 두번째 조인에서 만든 값
+                                            SchFacilityName = setting2.CodeName,
                                             SchAmount = temp.sch.SchAmount,
                                             RegDt = temp.sch.RegDt,
                                             ModDt = temp.sch.ModDt,
@@ -182,8 +180,6 @@ namespace WpfMrpSimulatorApp.ViewModels
         private void InitVariable()
         {
             SelectedSchedule = new ScheduleNew();
-            // SelectedSchedule.SchDate = DateOnly.FromDateTime(DateTime.Now); // 신규버튼 눌렀을때 0001-01-01방지
-            // IsUpdate가 False면 신규, True면 수정
             IsUpdate = false;
         }
 
@@ -193,18 +189,16 @@ namespace WpfMrpSimulatorApp.ViewModels
         public void NewData()
         {
             InitVariable();
-            IsUpdate = false;  // DoubleCheck. 확실하게 동작을 하면 지워도 되는 로직
-            CanSave = true; // 저장버튼 활성화
-            CanRemove = false; // 삭제버튼 비활성화
+            IsUpdate = false;
+            CanSave = true;
+            CanRemove = false;
         }        
 
         [RelayCommand]
         public async Task SaveData()
         {
-            // INSERT, UPDATE 기능을 모두 수행
             try
             {
-                // SelectedSchedule 형 ScheduleNew --> Schedule객체로 바꿔서 저장, 수정해야함
                 var schedule = new Schedule
                 {
                     SchIdx = SelectedSchedule.SchIdx,
@@ -219,14 +213,14 @@ namespace WpfMrpSimulatorApp.ViewModels
 
                 using (var db = new IoTDbContext())
                 {
-                    if (schedule.SchIdx == 0) // 신규
+                    if (schedule.SchIdx == 0)
                     {
-                        schedule.RegDt = DateTime.Now;  // 등록일 현재일자
-                        db.Schedules.Add(schedule); // ASP.NET Core에서 한 작업과 동일
+                        schedule.RegDt = DateTime.Now;
+                        db.Schedules.Add(schedule);
                     }
-                    else  // 수정
+                    else
                     {
-                        var origin = db.Schedules.Find(schedule.SchIdx); // ASP.NET Core와 동일
+                        var origin = db.Schedules.Find(schedule.SchIdx);
                         if (origin != null)
                         {
                             origin.PlantCode = schedule.PlantCode;
@@ -239,7 +233,7 @@ namespace WpfMrpSimulatorApp.ViewModels
                             origin.ModDt = DateTime.Now;
                         }
                     }
-                    db.SaveChanges(); // COMMIT
+                    db.SaveChanges();
                     await this.dialogCoordinator.ShowMessageAsync(this, "공정계획 저장", "데이터가 저장되었습니다.");
                 }
             }
@@ -248,15 +242,15 @@ namespace WpfMrpSimulatorApp.ViewModels
                 await this.dialogCoordinator.ShowMessageAsync(this, "오류", ex.Message);
             }
 
-            LoadGridFromDb(); // 재조회
-            IsUpdate = true;  // 다시 입력안되도록 막기
+            LoadGridFromDb();
+            IsUpdate = true;
         }
 
         [RelayCommand]
         public async Task RemoveData()
         {
             var result = await this.dialogCoordinator.ShowMessageAsync(this, "삭제", "삭제하시겠습니까?", MessageDialogStyle.AffirmativeAndNegative);
-            if (result == MessageDialogResult.Negative) return; // Cancel을 누르면 메서드를 탈출
+            if (result == MessageDialogResult.Negative) return;
 
             try
             {
@@ -266,7 +260,7 @@ namespace WpfMrpSimulatorApp.ViewModels
                     if (entity != null)
                     {
                         db.Schedules.Remove(entity);
-                        db.SaveChanges(); // COMMIT
+                        db.SaveChanges();
                     }
                 }
 
@@ -277,8 +271,8 @@ namespace WpfMrpSimulatorApp.ViewModels
                 await this.dialogCoordinator.ShowMessageAsync(this, "오류", ex.Message);
             }
 
-            LoadGridFromDb();  // DB를 다시 불러서 그리드를 재조회한다.
-            IsUpdate = true;  // 다시 입력안되도록 막기
+            LoadGridFromDb();
+            IsUpdate = true;
         }
 
         #endregion

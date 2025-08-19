@@ -96,7 +96,7 @@ namespace WpfMqttSubApp.ViewModels
             // MQTT 클라이언트접속 설정
             var mqttClientOptions = new MqttClientOptionsBuilder()
                 .WithTcpServer(BrokerHost, App.Configuration.Mqtt.Port)
-                //.WithClientId(clientId)  // 구독시스템도 클라이언트ID가 필요할 수 있음
+                //.WithClientId(clientId)
                 .WithCleanSession(true)
                 .Build();
 
@@ -111,9 +111,8 @@ namespace WpfMqttSubApp.ViewModels
             mqttClient.ApplicationMessageReceivedAsync += e =>
             {
                 var topic = e.ApplicationMessage.Topic;
-                var payload = e.ApplicationMessage.ConvertPayloadToString(); // byte 데이터를 UTF-8 문자열로 변환
+                var payload = e.ApplicationMessage.ConvertPayloadToString();
 
-                // json데이터를 일반객체로 다시 변환 -> 역직렬화(Deserialization)
                 var data = JsonConvert.DeserializeObject<CheckResult>(payload);
                 Debug.WriteLine($"{data.ClientId} / {data.Timestamp} / {data.Result}");
 
@@ -125,7 +124,7 @@ namespace WpfMqttSubApp.ViewModels
                 return Task.CompletedTask;
             };
 
-            await mqttClient.ConnectAsync(mqttClientOptions); // MQTT 서버에 접속
+            await mqttClient.ConnectAsync(mqttClientOptions);
         }
 
         private async Task SaveSensingData(FakeInfo data)
@@ -150,12 +149,11 @@ namespace WpfMqttSubApp.ViewModels
                     cmd.Parameters.AddWithValue("@light", data.Light);
                     cmd.Parameters.AddWithValue("@human", data.Human);
 
-                    await cmd.ExecuteNonQueryAsync(); // 이전까지는 cmd.ExecuteNonQuery()
+                    await cmd.ExecuteNonQueryAsync();
                 }
             }
             catch (Exception ex)
             {
-                // TODO : 아무 예외처리 안해도 됨.
             }
             
         }
@@ -185,7 +183,6 @@ namespace WpfMqttSubApp.ViewModels
                 return;
             }
 
-            // MQTT브로커에 접속해서 데이터를 가져오기
             await ConnectMqttBroker();
         }
 
@@ -210,8 +207,7 @@ namespace WpfMqttSubApp.ViewModels
 
         public void Dispose()
         {
-            // 리소스 해제를 명시적으로 처리하는 기능 추가
-            connection?.Close(); // DB접속 해제
+            connection?.Close();
         }
     }
 }

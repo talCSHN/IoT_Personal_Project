@@ -11,7 +11,6 @@ namespace WpfMrpSimulatorApp.ViewModels
 {
     public partial class MainViewModel : ObservableObject
     {
-        // 다이얼로그 코디네이터 변수 선언
         private readonly IDialogCoordinator dialogCoordinator;
 
         private string _greeting;
@@ -19,7 +18,7 @@ namespace WpfMrpSimulatorApp.ViewModels
 
         public MainViewModel(IDialogCoordinator coordinator)
         {
-            this.dialogCoordinator = coordinator; // 다이얼로그 코디네이터 초기화
+            this.dialogCoordinator = coordinator;
 
             Greeting = "MRP 공정관리!";
         }
@@ -83,8 +82,8 @@ namespace WpfMrpSimulatorApp.ViewModels
                 DataContext = viewModel,
             };
 
-            viewModel.StartHmiRequested += view.StartHmiAni; // 애니메이션 동작 연결
-            viewModel.StartSensorCheckRequested += view.StartSensorCheck; // 센서동작 애니메이션 연결
+            viewModel.StartHmiRequested += view.StartHmiAni;
+            viewModel.StartSensorCheckRequested += view.StartSensorCheck;
 
             CurrentView = view;
         }

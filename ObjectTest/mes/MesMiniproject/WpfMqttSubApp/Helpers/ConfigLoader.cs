@@ -13,7 +13,7 @@ namespace WpfMqttSubApp.Helpers
                 throw new FileNotFoundException("설정파일이 없습니다", path);
             }
 
-            string json = File.ReadAllText(path); // 문자열로 읽음
+            string json = File.ReadAllText(path);
             var config = JsonConvert.DeserializeObject<TotalConfig>(json);
 
             if (config == null)

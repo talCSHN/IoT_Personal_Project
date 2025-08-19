@@ -13,7 +13,6 @@ namespace WpfMrpSimulatorApp.ViewModels
 {
     public partial class SettingViewModel : ObservableObject
     {
-        // readonly 생성자에서 할당하고나면 그 이후에 값변경 불가
         private readonly IDialogCoordinator dialogCoordinator;
 
         #region View와 연동할 멤버변수들
@@ -114,12 +113,11 @@ namespace WpfMrpSimulatorApp.ViewModels
         #endregion
         public SettingViewModel(IDialogCoordinator coordinator)
         {
-            this.dialogCoordinator = coordinator;  // 파라미터값으로 초기화
+            this.dialogCoordinator = coordinator;
 
-            LoadGridFromDb(); // DB에서 데이터로드해서 그리드에 출력
+            LoadGridFromDb();
             IsUpdate = true;
 
-            // 최초에는 저장버튼, 삭제버튼이 비활성화 
             CanSave = CanRemove = false;            
         }
 
@@ -135,7 +133,6 @@ namespace WpfMrpSimulatorApp.ViewModels
                                    FROM settings";
                 ObservableCollection<Setting> settings = new ObservableCollection<Setting>();
 
-                // DB연동 방식 1
                 using (MySqlConnection conn = new MySqlConnection(Common.CONNSTR))
                 {
                     conn.Open();
@@ -148,7 +145,6 @@ namespace WpfMrpSimulatorApp.ViewModels
                         var codeName = reader.GetString("codeName");
                         var codeDesc = reader.GetString("codeDesc");
                         var regDt = reader.GetDateTime("regDt");
-                        // modDt는 최초에 입력후 항상 null. NULL타입 체크 필수
                         var modDt = reader.IsDBNull(reader.GetOrdinal("modDt")) ? (DateTime?)null : reader.GetDateTime("modDt");
 
                         settings.Add(new Setting
@@ -173,11 +169,10 @@ namespace WpfMrpSimulatorApp.ViewModels
         private void InitVariable()
         {
             SelectedSetting = new Setting();
-            // IsUpdate가 False면 신규, True면 수정
             IsUpdate = false;
 
             CanSave = true;
-            CanRemove = false;  // 이게 없으면 수정후 신규를 눌러도 활성화 되어 있음. 250623 12:31 hugo 수정
+            CanRemove = false;
         }
 
         #region View 버튼클릭 메서드
@@ -186,14 +181,13 @@ namespace WpfMrpSimulatorApp.ViewModels
         public void NewData()
         {
             InitVariable();
-            IsUpdate = false;  // DoubleCheck. 확실하게 동작을 하면 지워도 되는 로직
-            CanSave = true; // 저장버튼 활성화
+            IsUpdate = false;
+            CanSave = true;
         }        
 
         [RelayCommand]
         public async Task SaveData()
         {
-            // INSERT, UPDATE 기능을 모두 수행
             try
             {
                 string query = string.Empty;
@@ -205,12 +199,12 @@ namespace WpfMrpSimulatorApp.ViewModels
                     if (IsUpdate)
                     {
                         query = @"UPDATE settings SET codeName = @codeName, codeDesc = @codeDesc, modDt = now() 
-                                   WHERE basicCode = @basicCode";  // UPDATE 쿼리
+                                   WHERE basicCode = @basicCode";
                     }
                     else
                     {
                         query = @"INSERT INTO settings (basicCode, codeName, codeDesc, regDt)
-                                   VALUES (@basicCode, @codeName, @codeDesc, now());"; // INSERT 쿼리
+                                   VALUES (@basicCode, @codeName, @codeDesc, now());";
                     }
 
                     MySqlCommand cmd = new MySqlCommand(query, conn);
@@ -234,15 +228,15 @@ namespace WpfMrpSimulatorApp.ViewModels
                 await this.dialogCoordinator.ShowMessageAsync(this, "오류", ex.Message);
             }
 
-            LoadGridFromDb(); // 재조회
-            IsUpdate = true;  // 다시 입력안되도록 막기
+            LoadGridFromDb();
+            IsUpdate = true;
         }
 
         [RelayCommand]
         public async Task RemoveData()
         {
             var result = await this.dialogCoordinator.ShowMessageAsync(this, "삭제", "삭제하시겠습니까?", MessageDialogStyle.AffirmativeAndNegative);
-            if (result == MessageDialogResult.Negative) return; // Cancel을 누르면 메서드를 탈출
+            if (result == MessageDialogResult.Negative) return;
 
             try
             {
@@ -255,7 +249,7 @@ namespace WpfMrpSimulatorApp.ViewModels
 
                     cmd.Parameters.AddWithValue("@basicCode", SelectedSetting.BasicCode);
 
-                    int resultCnt = cmd.ExecuteNonQuery(); // 삭제된 쿼리행수 리턴 1, 안지워졌으면 0
+                    int resultCnt = cmd.ExecuteNonQuery();
 
                     if (resultCnt == 1)
                     {
@@ -272,8 +266,8 @@ namespace WpfMrpSimulatorApp.ViewModels
                 await this.dialogCoordinator.ShowMessageAsync(this, "오류", ex.Message);
             }
 
-            LoadGridFromDb();  // DB를 다시 불러서 그리드를 재조회한다.
-            IsUpdate = true;  // 다시 입력안되도록 막기
+            LoadGridFromDb();
+            IsUpdate = true;
         }
 
         #endregion

@@ -19,7 +19,6 @@ namespace WpfMrpSimulatorApp.ViewModels
 {
     public partial class MonitoringViewModel : ObservableObject
     {
-        // readonly 생성자에서 할당하고나면 그 이후에 값변경 불가
         private readonly IDialogCoordinator dialogCoordinator;
 
         #region 뷰와 관계없는 멤버변수
@@ -32,10 +31,9 @@ namespace WpfMrpSimulatorApp.ViewModels
 
         #endregion
 
-        // 멤버변수. 
-        private string _plantCode;          // IoT시뮬레이터로 전달
-        private string _prcFacilityId;      // IoT시뮬레이터로 전달
-        private bool _prcResult;    // 공정처리 결과 true(1), false(0)
+        private string _plantCode;
+        private string _prcFacilityId;
+        private bool _prcResult;
 
         // 색상표시할 변수
         private Brush _productBrush;
@@ -118,16 +116,16 @@ namespace WpfMrpSimulatorApp.ViewModels
         }
 
         public event Action? StartHmiRequested;
-        public event Action? StartSensorCheckRequested; // VM에서 View에 있는 이벤트를 호출
+        public event Action? StartSensorCheckRequested;
 
         public MonitoringViewModel(IDialogCoordinator coordinator)
         {
-            this.dialogCoordinator = coordinator;  // 파라미터값으로 초기화
+            this.dialogCoordinator = coordinator;
 
-            SchIdx = 1; // 최초 1부터 시작
+            SchIdx = 1;
 
             // MQTT 초기화
-            brokerHost = "210.119.12.52";  // 본인 아이피
+            brokerHost = "210.119.12.54";
             clientId = "MON01";
             mqttSubTopic = "pknu/sf52/data";
             mqttPubTopic = "pknu/sf52/control";
@@ -147,7 +145,7 @@ namespace WpfMrpSimulatorApp.ViewModels
                                 .WithCleanSession(true)
                                 .Build();
 
-            // mqtt 브로커에 접속
+            // mqtt 브로커 접속
             mqttClient.ConnectedAsync += async e =>
             {
                 LogText = "접속성공";
@@ -161,7 +159,6 @@ namespace WpfMrpSimulatorApp.ViewModels
             mqttClient.ApplicationMessageReceivedAsync += MqttMessageReceivedAsync;
         }
 
-        // 구독메시지 들어오면 처리하는 이벤트
         private Task MqttMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs arg)
         {
             // LogText = Encoding.UTF8.GetString(arg.ApplicationMessage.Payload);
@@ -185,18 +182,15 @@ namespace WpfMrpSimulatorApp.ViewModels
                 }
                 else if (data.Result.ToUpper().Equals("START"))
                 {
-                    // MQTT 스레드에서 UI 스레드 분리 동작
                     Application.Current.Dispatcher.InvokeAsync(() =>
                     {
-                        // 애니메이션 시작!
                         ProductBrush = Brushes.Gray;
-                        StartHmiRequested?.Invoke();  // 컨베이어벨트 애니메이션 요청(View에서 처리)
+                        StartHmiRequested?.Invoke();
                     });
                 }
 
                 SuccessRate = String.Format("{0:0.0}", (SuccessAmount * 100.0 / (SuccessAmount + FailAmount))) + " %";
 
-                // Process 테이블에 결과를 저장
                 SetDataToProcess();
             }
             catch (Exception ex)
@@ -210,7 +204,6 @@ namespace WpfMrpSimulatorApp.ViewModels
 
         private void SetDataToProcess()
         {
-            // DB연동
             string query = @"INSERT INTO processes
                                 (schIdx, prcCd, prcDate, prcLoadTime, prcFacilityId, prcResult, regDt) 
                              VALUES
@@ -234,16 +227,16 @@ namespace WpfMrpSimulatorApp.ViewModels
 
         public void CheckAni()
         {
-            StartSensorCheckRequested?.Invoke(); // 센서 애니메이션 동작 요청
+            StartSensorCheckRequested?.Invoke();
 
             Random rand = new();
-            int result = rand.Next(1, 3); // 1 ~ 2
+            int result = rand.Next(1, 3);
 
             ProductBrush = result switch
             {
                 1 => Brushes.Green, // 양품
                 2 => Brushes.Crimson, // 불량
-                _ => Brushes.Aqua,      // default 혹시나
+                _ => Brushes.Aqua,      // default
             };
         }
 
@@ -289,14 +282,13 @@ namespace WpfMrpSimulatorApp.ViewModels
                     SchAmount = Convert.ToInt32(row["schAmount"]);
                     SuccessAmount = FailAmount = 0;
                     SuccessRate = "0.0 %";
-                    // 위에까지는 뷰로 보낼 속성
-                    // 뷰모델 내부에서 쓸 변수
+                    
                     _plantCode = row["plantCode"].ToString();
                     _prcFacilityId = row["schFacilityId"].ToString();
                 } else
                 {
                     await this.dialogCoordinator.ShowMessageAsync(this, "공정조회", "해당 공정이 없습니다.");
-                    PlantName = string.Empty;  // 공정내용 전부 초기화
+                    PlantName = string.Empty;
                     PrcDate = string.Empty;
                     PrcLoadTime = string.Empty;
                     PrcFacilityName= string.Empty;
@@ -321,8 +313,6 @@ namespace WpfMrpSimulatorApp.ViewModels
         {
             try
             {
-                // MQTT Publish
-                // 실제 전달 메시지로 변경
                 var prcMsg = new PrcMsg
                 {
                     ClientId = clientId,
@@ -342,7 +332,6 @@ namespace WpfMrpSimulatorApp.ViewModels
 
                 if (mqttClient.IsConnected)
                 {
-                    // MQTT 브로커로 전송!
                     await mqttClient.PublishAsync(message);
                 } else
                 {
@@ -354,11 +343,11 @@ namespace WpfMrpSimulatorApp.ViewModels
                                 .WithCleanSession(true)
                                 .Build();
 
-                    await mqttClient.ConnectAsync(options); // 재접속
+                    await mqttClient.ConnectAsync(options);
                 }
 
                 ProductBrush = Brushes.Gray;
-                StartHmiRequested?.Invoke();  // 컨베이어벨트 애니메이션 요청(View에서 처리)
+                StartHmiRequested?.Invoke();
             }
             catch (Exception ex)
             {
